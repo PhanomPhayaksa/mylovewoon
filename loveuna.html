@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            cursor: pointer;
+            transition: background 1s;
+        }
+
+        .heart {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            animation: pulse 1.5s ease infinite, neonGlow 1.5s ease-in-out infinite alternate;
+        }
+
+        .heart::before,
+        .heart::after {
+            content: "";
+            position: absolute;
+            width: 100px;
+            height: 160px;
+            background: transparent;
+            border: 4px solid #ff00ff;
+            box-shadow:
+                0 0 20px #ff00ff,
+                0 0 40px #ff00ff;
+            border-radius: 100px 100px 0 0;
+        }
+
+        .heart::before {
+            left: 100px;
+            transform: rotate(-45deg);
+            transform-origin: 0 100%;
+        }
+
+        .heart::after {
+            left: 0;
+            transform: rotate(45deg);
+            transform-origin: 100% 100%;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes neonGlow {
+
+            0%,
+            100% {
+                filter: drop-shadow(0 0 10px #ff00ff);
+            }
+
+            50% {
+                filter: drop-shadow(0 0 30px #ff00ff);
+            }
+        }
+
+        /* ข้อความที่แสดงเมื่อคลิก */
+        .message-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            text-align: center;
+            max-width: 80%;
+            width: 600px;
+            display: none;
+        }
+
+        .message {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #ff00ff;
+            box-shadow: 0 0 20px #ff00ff;
+            text-shadow: 0 0 5px #ff00ff;
+            line-height: 1.8;
+            font-size: 18px;
+        }
+
+        .show {
+            display: block;
+            animation: fadeIn 1s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .hearts-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .tiny-heart {
+            position: absolute;
+            font-size: 20px;
+            color: #ff00ff;
+            animation: float 3s ease-in infinite;
+            opacity: 0;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .next-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #ff00ff;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 0 10px #ff00ff;
+            transition: all 0.3s;
+        }
+
+        .next-btn:hover {
+            background: #ff66ff;
+            box-shadow: 0 0 20px #ff00ff;
+        }
+
+        /* สไตล์สำหรับภาพ */
+        .love-image {
+            max-width: 80%;
+            max-height: 60vh;
+            border-radius: 15px;
+            border: 3px solid #ff00ff;
+            box-shadow: 0 0 30px #ff00ff;
+            margin: 20px auto;
+            display: none;
+            animation: fadeIn 1s;
+        }
+
+        .show-image {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="heart" id="heart"></div>
+    <div class="message-container" id="messageContainer">
+        <div class="message" id="message"></div>
+        <button class="next-btn" id="nextBtn">ต่อไป ❤</button>
+        <img src="mylove.jpg" class="love-image" id="loveImage" alt="ภาพของเรา">
+    </div>
+    <div class="hearts-bg" id="heartsBg"></div>
+
+    <script>
+        const heart = document.getElementById('heart');
+        const messageContainer = document.getElementById('messageContainer');
+        const message = document.getElementById('message');
+        const heartsBg = document.getElementById('heartsBg');
+        const nextBtn = document.getElementById('nextBtn');
+        const loveImage = document.getElementById('loveImage');
+
+        // ข้อความทั้งหมดแบ่งเป็นส่วนๆ
+        const messageParts = [
+            "ดักไว้ก่อนไม่รู้จะเลี่ยนมั้ยนะ แต่นี่เป็นสิ่งที่เค้าทำให้เธอได้ เค้าอยากจะบอกว่าในทุกๆ วันที่ได้อยู่ด้วยกัน เธอเป็นคนที่แสนพิเศษมากๆ",
+            "เธอเป็นคนที่ใจดี ถึงแม้บางครั้งจะพูดแรงบ้าง หรือแอบดุบ้าง แต่จริงๆแล้ว เธอก็เป็นห่วงความรู้สึกเหมือนกัน เค้ารับรู้ได้เสมอ",
+            "เธอทำให้เค้ารู้สึกปลอดภัย รู้สึกดีขึ้นมากๆที่ได้อยู่ใกล้ๆ เธอ เธอเป็นคนที่มีทัศนคติดีมากๆ เวลาเค้ารู้สึกแย่ หรือหมดกำลังใจ",
+            "เธอก็จะกลายเป็นพลังบวกที่เข้ามาปลอบใจเค้าให้กำลังใจตลอด เป็นแฟนที่ซัพพอร์ตสุดๆ เธออาจจะไม่ได้ติดหวานแต่การกระทำเธอก็แสดงออกชัดเจน",
+            "แล้วเธอเป็นคนที่จริงใจกับคำพูดทุกคำที่พูดออกมา คือเธอคิดแบบนั้นจริงๆ ไม่รู้สิบางทีเธอก็น่ารักแบบไม่ตั้งใจละมั้ง",
+            "ขี้อ้อนในแบบของเธอ เค้าชอบที่สุดเลย เธอไม่ต้องพยายามเลย แค่มีเธอเค้าก็มีความสุขมากๆ แล้ว",
+            "ช่วงนี้เราอาจจะมีเรื่องให้ทะเลาะกันบ้าง แต่สิ่งหนึ่งที่เค้ามั่นใจที่สุดคือเรายัง 'เลือกกัน' เสมอ",
+            "เราอาจจะมีความคิดเห็นที่ต่างกันมากๆ บางเรื่อง แต่เราก็พร้อมจะคุย พร้อมจะปรับ และเค้าไม่ทิ้งเธอ เธอไม่ทิ้งเค้า",
+            "เธอไม่เคยหายตอนที่เค้ารู้สึกแย่ เธออยู่ฟังเค้าอธิบายตลอด",
+            "ขอบคุณนะ ที่ยอมเป็นแฟนกับเค้านะ ขอบคุณที่เป็นพลังบวกให้เค้าเสมอ ไม่ว่าจะเกิดอะไรขึ้น",
+            "เค้าอยากให้เธอนึกถึงเรื่องดีๆ ที่เราทำด้วยกันไว้นะ กว่าเราจะเจอเธอมันไม่ง่ายเลย เค้ารักเธอนะ ❤"
+        ];
+
+        let currentPart = 0;
+
+        // สร้างหัวใจลอยทั่วจอ
+        function createHearts() {
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const tinyHeart = document.createElement('div');
+                    tinyHeart.classList.add('tiny-heart');
+                    tinyHeart.innerHTML = '❤';
+                    tinyHeart.style.left = Math.random() * 100 + 'vw';
+                    tinyHeart.style.animationDuration = 2 + Math.random() * 3 + 's';
+                    tinyHeart.style.animationDelay = Math.random() * 2 + 's';
+                    heartsBg.appendChild(tinyHeart);
+
+                    setTimeout(() => {
+                        tinyHeart.remove();
+                    }, 5000);
+                }, i * 100);
+            }
+        }
+
+        // แสดงข้อความปัจจุบัน
+        function showCurrentPart() {
+            message.textContent = messageParts[currentPart];
+
+            // ถ้าเป็นข้อความสุดท้ายให้แสดงภาพและเปลี่ยนปุ่ม
+            if (currentPart === messageParts.length - 1) {
+                loveImage.classList.add('show-image');
+                nextBtn.textContent = "❤ คลิกเพื่อดูภาพเรา ❤";
+                nextBtn.style.background = "#ff66ff";
+                nextBtn.onclick = function () {
+                    message.style.display = 'none';
+                    nextBtn.style.display = 'none';
+                    loveImage.style.display = 'block';
+                    createHearts();
+                    setTimeout(resetPage, 5000); // รีเซ็ตหลังจากแสดงภาพ 5 วินาที
+                };
+            }
+        }
+
+        // เมื่อคลิกหัวใจ
+        heart.addEventListener('click', () => {
+            heart.style.display = 'none';
+            document.body.style.background = '#1a001a';
+            messageContainer.classList.add('show');
+            createHearts();
+            showCurrentPart();
+        });
+
+        // เมื่อคลิกปุ่มต่อไป
+        nextBtn.addEventListener('click', () => {
+            if (currentPart < messageParts.length - 1) {
+                currentPart++;
+                showCurrentPart();
+                createHearts();
+            }
+        });
+
+        // รีเซ็ตหน้า
+        function resetPage() {
+            messageContainer.classList.remove('show');
+            heart.style.display = 'block';
+            document.body.style.background = '#000';
+            currentPart = 0;
+            nextBtn.textContent = "ต่อไป ❤";
+            nextBtn.style.background = "#ff00ff";
+            nextBtn.style.display = "block";
+            message.style.display = "block";
+            loveImage.classList.remove('show-image');
+            nextBtn.onclick = function () {
+                if (currentPart < messageParts.length - 1) {
+                    currentPart++;
+                    showCurrentPart();
+                    createHearts();
+                }
+            };
+        }
+    </script>
+</body>
+
+</html>
